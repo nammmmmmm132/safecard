@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.SafeCard" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#C62828</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#C62828</item>
+    </style>
+</resources>

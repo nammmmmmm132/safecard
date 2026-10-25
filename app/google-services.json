@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "939290299495",
+    "firebase_url": "https://safe-b2082-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "safe-b2082",
+    "storage_bucket": "safe-b2082.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:939290299495:android:0e47c66ffddbd69cfd58c2",
+        "android_client_info": {
+          "package_name": "com.example.safecard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwmJQKLxBpG1NPrU4H5_3nqo2MTfm9utE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

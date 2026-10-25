@@ -1,0 +1,213 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "levels": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "root.child('admins').child(auth.uid).val() === true"
+      }
+    },
+    "admins": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid"
+      }
+    },
+    "statusLocks": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "root.child('admins').child(auth.uid).val() === true"
+      }
+    },
+    "verifications": {
+      ".read": "root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": [
+        "status"
+      ],
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && newData.child('status').val() === 'pending' && (!data.exists() || data.child('status').val() !== 'approved') && ((!data.exists() && newData.child('attempts').val() === 1) || (data.exists() && newData.child('attempts').val() === data.child('attempts').val() + 1)) && newData.child('attempts').val() <= 3))"
+      }
+    },
+    "idHashes": {
+      "$h": {
+        ".read": "auth != null",
+        ".write": "root.child('admins').child(auth.uid).val() === true"
+      }
+    },
+    "verifiedIdentity": {
+      "$key": {
+        ".read": true,
+        ".write": "root.child('admins').child(auth.uid).val() === true"
+      }
+    },
+    "depQueue": {
+      ".read": "root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": [
+        "status"
+      ],
+      "$id": {
+        ".read": "auth != null && (root.child('admins').child(auth.uid).val() === true || data.child('guardianUid').val() === auth.uid)",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (newData.child('guardianUid').val() === auth.uid && root.child('levels').child(auth.uid).val() === 1 && newData.child('status').val() === 'pending' && (!data.exists() || data.child('status').val() !== 'approved')))"
+      }
+    },
+    "dependents": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
+    },
+    "responders": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('levels').child(auth.uid).val() === 1)",
+        ".write": "auth != null && auth.uid === $uid && root.child('levels').child($uid).val() === 1"
+      }
+    },
+    "responders_geo": {
+      ".read": "auth != null && root.child('levels').child(auth.uid).val() === 1",
+      ".indexOn": [
+        "g"
+      ],
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && root.child('levels').child($uid).val() === 1"
+      }
+    },
+    "invitesByPhone": {
+      "$phone": {
+        ".read": "auth != null && auth.token.phone_number === '+' + $phone",
+        "$id": {
+          ".write": "auth != null && ((!data.exists() && newData.child('fromUid').val() === auth.uid) || data.child('fromUid').val() === auth.uid)",
+          "status": {
+            ".write": "auth != null && auth.token.phone_number === '+' + $phone"
+          }
+        }
+      }
+    },
+    "relativeLinks": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$relUid": {
+          ".read": "auth != null && auth.uid === $relUid",
+          ".write": "auth != null && (auth.uid === $relUid || (auth.uid === $uid && !newData.exists()))",
+          ".validate": "!newData.exists() || (newData.hasChildren(['phoneKey','inviteId']) && auth.token.phone_number === '+' + newData.child('phoneKey').val() && root.child('invitesByPhone').child(newData.child('phoneKey').val()).child(newData.child('inviteId').val()).child('fromUid').val() === $uid && root.child('invitesByPhone').child(newData.child('phoneKey').val()).child(newData.child('inviteId').val()).child('status').val() === 'pending' && root.child('invitesByPhone').child(newData.child('phoneKey').val()).child(newData.child('inviteId').val()).child('createdAt').val() > now - 604800000)"
+        }
+      }
+    },
+    "alertsInbox": {
+      "$rid": {
+        ".read": "auth != null && auth.uid === $rid",
+        "$eventId": {
+          ".write": "auth != null && (auth.uid === $rid || root.child('relativeLinks').child(auth.uid).child($rid).exists() || (root.child('levels').child(auth.uid).val() === 1 && root.child('responders').child($rid).child('active').val() === true))"
+        }
+      }
+    },
+    "sosEvents": {
+      ".read": "root.child('admins').child(auth.uid).val() === true",
+      "$eventId": {
+        ".read": "auth != null && (data.child('uid').val() === auth.uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || data.child('uid').val() === auth.uid)",
+        "name": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).exists()"
+        },
+        "status": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).exists()"
+        },
+        "startedAt": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).exists()"
+        },
+        "approx": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).exists()"
+        },
+        "uid": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).child('type').val() === 'relative'"
+        },
+        "lastLocation": {
+          ".read": "(auth != null && data.parent().child('alerts').child(auth.uid).child('type').val() === 'relative') || (auth != null && data.parent().child('alerts').child(auth.uid).child('type').val() === 'volunteer' && (data.parent().child('alerts').child(auth.uid).child('status').val() === 'accepted' || data.parent().child('alerts').child(auth.uid).child('status').val() === 'arrived'))"
+        },
+        "medical": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).child('type').val() === 'relative'"
+        },
+        "medicalVol": {
+          ".read": "auth != null && data.parent().child('alerts').child(auth.uid).child('type').val() === 'volunteer' && (data.parent().child('alerts').child(auth.uid).child('status').val() === 'accepted' || data.parent().child('alerts').child(auth.uid).child('status').val() === 'arrived')"
+        },
+        "alerts": {
+          "$rid": {
+            ".read": "auth != null && auth.uid === $rid",
+            ".write": "auth != null && auth.uid === $rid && data.exists()"
+          }
+        },
+        "accessLog": {
+          "$id": {
+            ".write": "auth != null && newData.child('uid').val() === auth.uid && root.child('sosEvents').child($eventId).child('alerts').child(auth.uid).exists()"
+          }
+        },
+        "chat": {
+          "$rid": {
+            ".read": "auth != null && auth.uid === $rid",
+            "$msg": {
+              ".write": "auth != null && !data.exists() && newData.child('from').val() === auth.uid && root.child('sosEvents').child($eventId).child('alerts').child($rid).exists() && (auth.uid === $rid || root.child('sosEvents').child($eventId).child('uid').val() === auth.uid)"
+            }
+          }
+        }
+      }
+    },
+    "liveTracks": {
+      "$token": {
+        ".read": true,
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid) || data.child('uid').val() === auth.uid)"
+      }
+    },
+    "pointLedger": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('admins').child(auth.uid).val() === true)",
+        "$id": {
+          ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (auth.uid === $uid && !data.exists() && newData.child('reason').val() === 'false_alarm' && newData.child('delta').val() === -20 && root.child('sosEvents').child($id).child('uid').val() === auth.uid && root.child('sosEvents').child($id).child('outcome').child('victimSays').val() === 'false_alarm') || (auth.uid !== $uid && !data.exists() && newData.child('reason').val() === 'helped' && newData.child('delta').val() === 20 && root.child('sosEvents').child($id).child('uid').val() === auth.uid && root.child('sosEvents').child($id).child('alerts').child($uid).child('status').val() === 'arrived' && (!root.child('helpPairs').child(auth.uid + '_' + $uid).exists() || root.child('helpPairs').child(auth.uid + '_' + $uid).child('t').val() < now - 2592000000)))"
+        }
+      }
+    },
+    "helpPairs": {
+      "$pair": {
+        ".write": "auth != null && $pair.beginsWith(auth.uid + '_')"
+      }
+    },
+    "reports": {
+      ".read": "root.child('admins').child(auth.uid).val() === true",
+      ".indexOn": [
+        "status"
+      ],
+      "$id": {
+        ".read": "auth != null && (data.child('from').val() === auth.uid || root.child('admins').child(auth.uid).val() === true)",
+        ".write": "auth != null && (root.child('admins').child(auth.uid).val() === true || (!data.exists() && newData.child('from').val() === auth.uid))"
+      }
+    },
+    "publicCards": {
+      "$token": {
+        ".read": true,
+        "uid": {
+          ".write": "auth != null && ((!data.exists() && newData.val() === auth.uid) || (data.val() === auth.uid && !newData.exists()))"
+        },
+        "data": {
+          ".write": "auth != null && data.parent().child('uid').val() === auth.uid",
+          ".validate": "!newData.exists() || (newData.child('verifyKey').val() === auth.uid || root.child('dependents').child(auth.uid).child(newData.child('verifyKey').val()).exists())"
+        }
+      }
+    },
+    "qrPings": {
+      "$token": {
+        ".read": "auth != null && root.child('publicCards').child($token).child('uid').val() === auth.uid",
+        "$id": {
+          ".write": "auth != null && !data.exists() && root.child('publicCards').child($token).child('uid').exists() && (!root.child('qrPingLast').child($token).exists() || root.child('qrPingLast').child($token).val() < now - 600000)"
+        }
+      }
+    },
+    "qrPingLast": {
+      "$token": {
+        ".write": "auth != null && (!data.exists() || data.val() < now - 600000) && newData.val() <= now + 60000"
+      }
+    }
+  }
+}

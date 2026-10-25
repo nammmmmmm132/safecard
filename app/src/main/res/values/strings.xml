@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">SafeCard</string>
+    <string name="sos_short">SOS</string>
+    <string name="sos_long">Gửi SOS khẩn cấp</string>
+    <string name="vol_desc">SafeCard chỉ dùng dịch vụ này để phát hiện giữ đồng thời hai nút âm lượng trong 3 giây nhằm gửi SOS. Không đọc nội dung màn hình.</string>
+</resources>

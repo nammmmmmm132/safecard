@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Người thân"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nhập số người thân. Họ phải cài SafeCard, đăng ký bằng đúng số này (OTP) và bấm Chấp nhận thì mới thành người thân đã xác minh. Lời mời hết hạn sau 7 ngày."
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etRelName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tên gọi (vd Mẹ)"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/etRelPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại người thân"
+            android:inputType="phone" />
+
+        <Button
+            android:id="@+id/btnInvite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Gửi lời mời" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Lời mời gửi tới bạn"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:id="@+id/secIncoming"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Người thân đã xác minh"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:id="@+id/secVerified"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Lời mời đang chờ"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:id="@+id/secPending"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Bạn đang là người thân của"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:id="@+id/secProtecting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </LinearLayout>
+</ScrollView>

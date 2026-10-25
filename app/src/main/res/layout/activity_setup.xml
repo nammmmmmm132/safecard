@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thiết lập bảo vệ"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvPerm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="15sp" />
+
+        <Button android:id="@+id/btnLoc" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="1. Cấp quyền vị trí (chọn \u201CLuôn cho phép\u201D)" />
+        <Button android:id="@+id/btnNotif" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="2. Cấp quyền thông báo" />
+        <Button android:id="@+id/btnSms" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="3. Cấp quyền gửi SMS" />
+        <Button android:id="@+id/btnBattery" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="4. Bỏ tối ưu pin cho SafeCard" />
+        <Button android:id="@+id/btnFsi" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="5. Cho phép thông báo toàn màn hình (Android 14)" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Mã hủy (4 số) và mã cưỡng ép (4 số, khác mã hủy). Nhập mã cưỡng ép thì app giả vờ đã hủy nhưng vẫn âm thầm gửi SOS. Mã chỉ lưu dạng băm trên máy."
+            android:textSize="13sp" />
+
+        <EditText
+            android:id="@+id/etCancel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mã hủy 4 số"
+            android:inputType="numberPassword"
+            android:maxLength="4" />
+
+        <EditText
+            android:id="@+id/etDuress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mã cưỡng ép 4 số"
+            android:inputType="numberPassword"
+            android:maxLength="4" />
+
+        <Button
+            android:id="@+id/btnSaveCodes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lưu mã" />
+
+        <Button android:id="@+id/btnAcc" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="6. Bật giữ 2 nút âm lượng 3 giây (Trợ năng → SafeCard)" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swShake"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lắc điện thoại 3 lần để SOS (mặc định tắt, dễ báo nhầm)" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swFall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Phát hiện té ngã bằng gia tốc kế (mặc định tắt)" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/swGuard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Bật bảo vệ: bấm nút nguồn 5 lần để gửi SOS"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvGuide"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:textSize="13sp" />
+    </LinearLayout>
+</ScrollView>

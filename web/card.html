@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeCard – Thẻ y tế khẩn cấp</title>
+<style>
+ body{font-family:system-ui,sans-serif;max-width:520px;margin:20px auto;padding:0 16px;color:#222}
+ h2{color:#c62828;margin-bottom:4px} .box{padding:14px;border-radius:12px;margin:12px 0}
+ .ok{background:#e8f5e9} .warn{background:#fff8e1} .main{background:#ffebee}
+ .row{margin:6px 0} .k{color:#666;font-size:13px} .v{font-size:19px;font-weight:600}
+ button{background:#c62828;color:#fff;border:0;padding:14px 18px;border-radius:10px;font-size:17px;width:100%}
+ button:disabled{background:#999}
+</style>
+</head>
+<body>
+<h2>🩺 Thẻ y tế khẩn cấp</h2>
+<div id="state">Đang tải…</div>
+<div id="card"></div>
+<div id="ident"></div>
+<div class="box warn">Thông tin y tế: <b>chủ thẻ tự khai</b>, chưa được cơ sở y tế xác nhận. Công cụ hỗ trợ, không thay thế gọi 115/113.</div>
+<button id="ping" style="display:none">🚨 Báo người thân của chủ thẻ</button>
+<div id="pingMsg" class="k"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, get, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// ĐIỀN thông tin Firebase của bạn (giống file index.html)
+const firebaseConfig = { apiKey: "ĐIỀN_API_KEY", authDomain: "ĐIỀN_PROJECT_ID.firebaseapp.com", databaseURL: "ĐIỀN_DATABASE_URL", projectId: "ĐIỀN_PROJECT_ID" };
+
+const LABELS = { bloodType:"Nhóm máu", allergies:"Dị ứng", conditions:"Bệnh nền", medications:"Thuốc đang dùng", dob:"Ngày sinh", insuranceNo:"Số bảo hiểm", note:"Ghi chú" };
+const token = new URLSearchParams(location.search).get("t");
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+if (!token) { $("state").textContent = "Thiếu mã thẻ."; }
+else {
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const snap = await get(ref(db, "publicCards/" + token + "/data"));
+  if (!snap.exists()) { $("state").textContent = "Thẻ không tồn tại hoặc đã bị thu hồi."; }
+  else {
+    const d = snap.val();
+    $("state").textContent = "";
+    let html = '<div class="box main"><div class="k">Họ tên</div><div class="v">' + esc(d.name) + '</div>';
+    for (const k of Object.keys(LABELS)) if (d[k]) html += '<div class="row"><div class="k">' + LABELS[k] + '</div><div class="v">' + esc(d[k]) + '</div></div>';
+    $("card").innerHTML = html + "</div>";
+
+    const idSnap = await get(ref(db, "verifiedIdentity/" + d.verifyKey + "/name"));
+    $("ident").innerHTML = idSnap.exists()
+      ? '<div class="box ok">Danh tính: <b>đã xác minh bởi admin</b> (tên đã xác minh: ' + esc(idSnap.val()) + ')</div>'
+      : '<div class="box warn">Danh tính: <b>chưa xác minh</b></div>';
+
+    if (d.kind === "self") {
+      $("ping").style.display = "block";
+      $("ping").onclick = async () => {
+        $("ping").disabled = true;
+        try {
+          const cred = await signInAnonymously(getAuth(app));
+          const now = Date.now();
+          const key = push(ref(db, "qrPings/" + token)).key;
+          await update(ref(db), {
+            ["qrPings/" + token + "/" + key]: { at: now },
+            ["qrPingLast/" + token]: now
+          });
+          $("pingMsg").textContent = "Đã báo cho máy của chủ thẻ. Số điện thoại người thân không được hiển thị. Hãy gọi 115 nếu khẩn cấp.";
+        } catch (e) {
+          $("pingMsg").textContent = "Không báo được (có thể vừa có người báo trong 10 phút qua): " + e.message;
+          $("ping").disabled = false;
+        }
+      };
+    }
+  }
+}
+</script>
+</body>
+</html>

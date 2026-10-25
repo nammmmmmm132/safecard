@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SafeCard - Theo dõi SOS</title>
+<style>
+ body{font-family:system-ui,sans-serif;max-width:480px;margin:24px auto;padding:0 16px}
+ h2{color:#c62828} .box{padding:16px;border-radius:12px;background:#ffebee;margin:12px 0}
+ a.btn{display:inline-block;background:#c62828;color:#fff;padding:12px 18px;border-radius:8px;text-decoration:none}
+</style>
+</head>
+<body>
+<h2>SafeCard – Vị trí SOS</h2>
+<div class="box" id="st">Đang tải…</div>
+<div id="co"></div>
+<p><a class="btn" id="map" href="#" target="_blank">Mở bản đồ</a></p>
+<p style="font-size:12px;color:#666">Công cụ hỗ trợ, không thay thế gọi 115/113. Trang tự hết hiệu lực khi SOS kết thúc.</p>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// ĐIỀN thông tin Firebase của bạn (lấy trong google-services.json / Project settings)
+const firebaseConfig = {
+  apiKey: "ĐIỀN_API_KEY",
+  databaseURL: "ĐIỀN_DATABASE_URL",
+  projectId: "ĐIỀN_PROJECT_ID"
+};
+
+const token = new URLSearchParams(location.search).get("t");
+const st = document.getElementById("st"), co = document.getElementById("co"), map = document.getElementById("map");
+if (!token) { st.textContent = "Thiếu mã truy cập."; }
+else {
+  const db = getDatabase(initializeApp(firebaseConfig));
+  onValue(ref(db, "liveTracks/" + token), (s) => {
+    const v = s.val();
+    if (!v) { st.textContent = "Không tìm thấy hoặc đã hết hạn."; return; }
+    st.textContent = (v.active ? "ĐANG SOS: " : "Đã kết thúc: ") + (v.name || "");
+    if (v.lat != null) {
+      co.textContent = "Vị trí: " + v.lat.toFixed(5) + ", " + v.lng.toFixed(5) + " – cập nhật " + new Date(v.t).toLocaleTimeString();
+      map.href = "https://maps.google.com/?q=" + v.lat + "," + v.lng;
+    }
+  });
+}
+</script>
+</body>
+</html>
